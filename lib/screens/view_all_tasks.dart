@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 
 class ViewAllTasksScreen extends StatelessWidget {
-  // Sample data for tasks
   final List<Map<String, String>> tasks = [
-    {'task': 'Task 1', 'status': 'To Do', 'assignedTo': 'John'},
-    {'task': 'Task 2', 'status': 'In Progress', 'assignedTo': 'Jane'},
-    {'task': 'Task 3', 'status': 'Done', 'assignedTo': 'Mike'},
-    // Add more tasks here as needed
+    {
+      'name': 'Task 1',
+      'description': 'Task description 1',
+      'date': '2024-11-19',
+      'assigned': 'John Doe'
+    },
+    {
+      'name': 'Task 2',
+      'description': 'Task description 2',
+      'date': '2024-11-20',
+      'assigned': 'Jane Smith'
+    },
+    {
+      'name': 'Task 3',
+      'description': 'Task description 3',
+      'date': '2024-11-21',
+      'assigned': 'Mark Lee'
+    },
   ];
 
   @override
@@ -15,34 +28,28 @@ class ViewAllTasksScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('View All Tasks'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            return Card(
-              margin: EdgeInsets.only(bottom: 10),
-              child: ListTile(
-                title: Text(tasks[index]['task']!),
-                subtitle: Text('Assigned to: ${tasks[index]['assignedTo']}'),
-                trailing: Chip(
-                  label: Text(tasks[index]['status']!),
-                  backgroundColor: tasks[index]['status'] == 'Done'
-                      ? Colors.green
-                      : tasks[index]['status'] == 'In Progress'
-                          ? Colors.orange
-                          : Colors.red,
-                ),
-                onTap: () {
-                  // On tap, you could add functionality to view task details
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Viewing details for ${tasks[index]['task']}')),
-                  );
+      body: ListView.builder(
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          final task = tasks[index];
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            child: ListTile(
+              title: Text(task['name'] ?? ''),
+              subtitle: Text(
+                  'Assigned to: ${task['assigned']}\nDate: ${task['date']}'),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  // Add logic for deleting a task here
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Task deleted!'),
+                  ));
                 },
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

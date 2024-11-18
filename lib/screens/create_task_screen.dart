@@ -7,83 +7,96 @@ class CreateTaskScreen extends StatefulWidget {
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _taskController = TextEditingController();
-  final TextEditingController _assignedToController = TextEditingController();
-  String _status = 'To Do';
-
-  // List of statuses
-  final List<String> statuses = ['To Do', 'In Progress', 'Done'];
+  String taskName = '';
+  String taskDescription = '';
+  String taskDate = '';
+  String assignedTo = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Task'),
+        title: Text('Create Task'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                controller: _taskController,
                 decoration: InputDecoration(labelText: 'Task Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter task name';
+                    return 'Please enter a task name';
                   }
                   return null;
                 },
+                onChanged: (value) {
+                  setState(() {
+                    taskName = value;
+                  });
+                },
               ),
-              SizedBox(height: 10),
               TextFormField(
-                controller: _assignedToController,
+                decoration: InputDecoration(labelText: 'Task Description'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a task description';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    taskDescription = value;
+                  });
+                },
+              ),
+              TextFormField(
+                decoration:
+                    InputDecoration(labelText: 'Task Date (yyyy-mm-dd)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a task date';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  setState(() {
+                    taskDate = value;
+                  });
+                },
+              ),
+              TextFormField(
                 decoration: InputDecoration(labelText: 'Assigned To'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter person assigned to';
+                    return 'Please enter the assignee';
                   }
                   return null;
                 },
-              ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _status,
-                items: statuses.map((status) {
-                  return DropdownMenuItem<String>(
-                    value: status,
-                    child: Text(status),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
+                onChanged: (value) {
                   setState(() {
-                    _status = newValue!;
+                    assignedTo = value;
                   });
                 },
-                decoration: InputDecoration(labelText: 'Status'),
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // Here, you would usually send the data to a backend or database
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text('Task Created: ${_taskController.text}')),
-                    );
-
-                    // Clear form after submission
-                    _taskController.clear();
-                    _assignedToController.clear();
-                    setState(() {
-                      _status = 'To Do';
-                    });
-                  }
-                },
-                child: Text('Create Task'),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      // If form is valid, submit the task data
+                      // You can add logic here to save the task data to a local storage or backend
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Task Created Successfully!'),
+                      ));
+                      Navigator.pop(context); // Go back to the admin dashboard
+                    }
+                  },
+                  child: Text('Create Task'),
+                ),
               ),
             ],
           ),
