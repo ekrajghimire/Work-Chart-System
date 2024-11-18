@@ -7,108 +7,82 @@ class CreateTaskScreen extends StatefulWidget {
 
 class _CreateTaskScreenState extends State<CreateTaskScreen> {
   final _formKey = GlobalKey<FormState>();
-  String _taskName = '';
-  String _client = '';
-  String _location = '';
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
+  final TextEditingController _taskController = TextEditingController();
+  final TextEditingController _assignedToController = TextEditingController();
+  String _status = 'To Do';
 
-  void _pickDate() async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (pickedDate != null && pickedDate != _selectedDate) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-    }
-  }
-
-  void _pickTime() async {
-    final TimeOfDay? pickedTime = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-    );
-    if (pickedTime != null && pickedTime != _selectedTime) {
-      setState(() {
-        _selectedTime = pickedTime;
-      });
-    }
-  }
-
-  void _submitTask() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      // You can replace this with logic to save the task (e.g., save to local database).
-      print('Task Created: $_taskName, Client: $_client, Location: $_location');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Task Created Successfully')),
-      );
-      Navigator.pop(context);
-    }
-  }
+  // List of statuses
+  final List<String> statuses = ['To Do', 'In Progress', 'Done'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Task'),
+        title: Text('Create New Task'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
+                controller: _taskController,
                 decoration: InputDecoration(labelText: 'Task Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a task name';
+                    return 'Please enter task name';
                   }
                   return null;
                 },
-                onSaved: (value) => _taskName = value!,
               ),
+              SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Client Name'),
-                onSaved: (value) => _client = value!,
+                controller: _assignedToController,
+                decoration: InputDecoration(labelText: 'Assigned To'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter person assigned to';
+                  }
+                  return null;
+                },
               ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Location'),
-                onSaved: (value) => _location = value!,
-              ),
-              SizedBox(height: 16),
-              Row(
-                children: [
-                  Text(
-                    'Date: ${_selectedDate.toLocal()}'.split(' ')[0],
-                  ),
-                  Spacer(),
-                  TextButton(
-                    onPressed: _pickDate,
-                    child: Text('Select Date'),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Time: ${_selectedTime.format(context)}',
-                  ),
-                  Spacer(),
-                  TextButton(
-                    onPressed: _pickTime,
-                    child: Text('Select Time'),
-                  ),
-                ],
+              SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                value: _status,
+                items: statuses.map((status) {
+                  return DropdownMenuItem<String>(
+                    value: status,
+                    child: Text(status),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _status = newValue!;
+                  });
+                },
+                decoration: InputDecoration(labelText: 'Status'),
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _submitTask,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Here, you would usually send the data to a backend or database
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Task Created: ${_taskController.text}')),
+                    );
+
+                    // Clear form after submission
+                    _taskController.clear();
+                    _assignedToController.clear();
+                    setState(() {
+                      _status = 'To Do';
+                    });
+                  }
+                },
                 child: Text('Create Task'),
               ),
             ],
