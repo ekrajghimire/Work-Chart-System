@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         '/admin_dashboard': (context) => AdminDashboard(),
         '/crew_dashboard': (context) => CrewDashboard(),
         '/create_task': (context) => CreateTaskScreen(),
+        '/view_all_tasks': (context) => ViewAllTasksScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
