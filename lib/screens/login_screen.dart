@@ -1,50 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  Future<void> _login(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-
-    // Simple validation
-    if (email == 'admin@example.com' && password == 'admin123') {
-      await prefs.setString('role', 'admin');
-      Navigator.pushNamed(context, '/admin_dashboard');
-    } else if (email == 'crew@example.com' && password == 'crew123') {
-      await prefs.setString('role', 'crew');
-      Navigator.pushNamed(context, '/crew_dashboard');
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid credentials')),
-      );
-    }
-  }
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
+      appBar: AppBar(
+        title: const Text('Login'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
             ),
+            const SizedBox(height: 16.0),
             TextField(
-              controller: _passwordController,
+              controller: passwordController,
               obscureText: true,
-              decoration: InputDecoration(labelText: 'Password'),
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: () => _login(context),
-              child: Text('Login'),
+              onPressed: () {
+                // Add your login logic here
+                Navigator.pushNamed(context, '/admin_dashboard');
+              },
+              child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              child: const Text('Don\'t have an account? Sign Up'),
             ),
           ],
         ),
