@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:work_chart_system/screens/admin_dashboard_screen.dart';
+import 'package:work_chart_system/screens/crew_dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-import 'screens/admin_dashboard_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,11 +17,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
-        '/login': (context) => const LoginScreen(),
-        '/signup': (context) => const SignupScreen(),
-        '/admin_dashboard': (context) => const AdminDashboardScreen(),
+        '/': (context) => LoginScreen(),
+        '/signup': (context) => SignupScreen(),
+        '/admin_dashboard': (context) => AdminDashboard(),
+        '/crew_dashboard': (context) => CrewDashboard(),
       },
     );
   }
