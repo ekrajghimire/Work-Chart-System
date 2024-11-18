@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'screens/admin_dashboard_screen.dart'; // Ensure this is the correct import
+import 'screens/admin_dashboard_screen.dart'; 
 import 'screens/crew_dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-import 'screens/create_task_screen.dart'; // Assuming the task screen was renamed to match this
-import 'screens/view_all_tasks.dart'; // Assuming this screen was added
+import 'screens/create_task_screen.dart'; 
+import 'screens/view_all_tasks.dart'; 
 
 void main() {
   runApp(MyApp());
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => PlaceholderHomeScreen(),
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        '/admin_dashboard': (context) => AdminDashboard(),
+        '/admin_dashboard': (context) => AdminDashboardScreen(),
         '/crew_dashboard': (context) => CrewDashboard(),
         '/create_task': (context) => CreateTaskScreen(),
         '/view_all_tasks': (context) => ViewAllTasksScreen(),
