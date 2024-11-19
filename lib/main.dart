@@ -30,18 +30,7 @@ bool get isDesktop =>
 class MyApp extends StatelessWidget {
   // Shared task list and crew members list
   final List<Map<String, dynamic>> tasks = [];
-  final List<Map<String, String>> crewMembers = [
-    {
-      'name': 'John Doe',
-      'phone': '1234567890',
-      'email': 'john.doe@example.com'
-    },
-    {
-      'name': 'Jane Smith',
-      'phone': '9876543210',
-      'email': 'jane.smith@example.com'
-    },
-  ];
+  final List<Map<String, String>> crewMembers = [];
 
   @override
   Widget build(BuildContext context) {

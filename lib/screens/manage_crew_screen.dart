@@ -123,7 +123,8 @@ class _ManageCrewScreenState extends State<ManageCrewScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Crew Member'),
-        content: const Text('Are you sure you want to delete this crew member?'),
+        content:
+            const Text('Are you sure you want to delete this crew member?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -149,41 +150,48 @@ class _ManageCrewScreenState extends State<ManageCrewScreen> {
       appBar: AppBar(
         title: const Text('Manage Crew Members'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: widget.crewMembers.length,
-          itemBuilder: (context, index) {
-            final crewMember = widget.crewMembers[index];
-            return Card(
-              child: ListTile(
-                title: Text(crewMember['name'] ?? ''),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Phone: ${crewMember['phone']}'),
-                    Text('Email: ${crewMember['email']}'),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => _addOrEditCrewMember(
-                          existingCrewMember: crewMember),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteCrewMember(crewMember),
-                    ),
-                  ],
-                ),
+      body: widget.crewMembers.isEmpty
+          ? const Center(
+              child: Text(
+                'No crew members added. Tap the "+" button to add.',
+                style: TextStyle(fontSize: 16),
               ),
-            );
-          },
-        ),
-      ),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView.builder(
+                itemCount: widget.crewMembers.length,
+                itemBuilder: (context, index) {
+                  final crewMember = widget.crewMembers[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(crewMember['name'] ?? ''),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Phone: ${crewMember['phone']}'),
+                          Text('Email: ${crewMember['email']}'),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _addOrEditCrewMember(
+                                existingCrewMember: crewMember),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _deleteCrewMember(crewMember),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addOrEditCrewMember(),
         child: const Icon(Icons.add),
