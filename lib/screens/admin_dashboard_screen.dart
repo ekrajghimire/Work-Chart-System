@@ -3,12 +3,21 @@ import 'create_task_screen.dart';
 import 'view_all_tasks.dart';
 import 'manage_crew_screen.dart';
 
-class AdminDashboardScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> tasks; // This will store the tasks
+class AdminDashboardScreen extends StatefulWidget {
+  const AdminDashboardScreen({
+    Key? key,
+    required this.tasks,
+    required this.crewMembers,
+  }) : super(key: key);
 
-  // Constructor to receive tasks from the parent widget
-  const AdminDashboardScreen({Key? key, required this.tasks}) : super(key: key);
+  final List<Map<String, dynamic>> tasks; // List of tasks
+  final List<Map<String, String>> crewMembers; // Updated type for crew members
 
+  @override
+  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
+}
+
+class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,28 +31,29 @@ class AdminDashboardScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Navigate to the CreateTaskScreen, passing the tasks list
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CreateTaskScreen(
-                      tasks: tasks, // Passing tasks to CreateTaskScreen
+                      tasks: widget.tasks,
+                      crewMembers: widget.crewMembers
+                          .map((member) => member['name'] ?? '')
+                          .toList(),
                       isAdmin: true,
                     ),
                   ),
-                );
+                ).then((_) => setState(() {}));
               },
               child: const Text('Create Task'),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Navigate to the ViewAllTasksScreen, passing the tasks list
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ViewAllTasksScreen(
-                      tasks: tasks, // Passing tasks to ViewAllTasksScreen
+                      tasks: widget.tasks,
                       isAdmin: true,
                     ),
                   ),
@@ -54,13 +64,14 @@ class AdminDashboardScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Navigate to the ManageCrewScreen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ManageCrewScreen(),
+                    builder: (context) => ManageCrewScreen(
+                      crewMembers: widget.crewMembers,
+                    ),
                   ),
-                );
+                ).then((_) => setState(() {}));
               },
               child: const Text('Manage Crew Members'),
             ),

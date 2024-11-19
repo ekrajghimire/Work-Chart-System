@@ -1,111 +1,145 @@
 import 'package:flutter/material.dart';
 
 class ManageCrewScreen extends StatefulWidget {
-  const ManageCrewScreen({Key? key}) : super(key: key);
+  final List<Map<String, String>> crewMembers;
+
+  const ManageCrewScreen({Key? key, required this.crewMembers})
+      : super(key: key);
 
   @override
-  _ManageCrewScreenState createState() => _ManageCrewScreenState();
+  State<ManageCrewScreen> createState() => _ManageCrewScreenState();
 }
 
 class _ManageCrewScreenState extends State<ManageCrewScreen> {
-  final List<Map<String, String>> _crewMembers = [
-    {'name': 'John Doe', 'phone': '9876543210', 'email': 'john@example.com'},
-    {'name': 'Jane Smith', 'phone': '9123456789', 'email': 'jane@example.com'},
-  ];
+  final _formKey = GlobalKey<FormState>();
+  String? _crewName;
+  String? _phoneNumber;
+  String? _email;
 
-  void _addOrEditCrewMember({Map<String, String>? existingMember, int? index}) {
-    TextEditingController _nameController = TextEditingController(
-        text: existingMember != null ? existingMember['name'] : '');
-    TextEditingController _phoneController = TextEditingController(
-        text: existingMember != null ? existingMember['phone'] : '');
-    TextEditingController _emailController = TextEditingController(
-        text: existingMember != null ? existingMember['email'] : '');
+  void _addOrEditCrewMember({Map<String, String>? existingCrewMember}) {
+    if (existingCrewMember != null) {
+      _crewName = existingCrewMember['name'];
+      _phoneNumber = existingCrewMember['phone'];
+      _email = existingCrewMember['email'];
+    } else {
+      _crewName = null;
+      _phoneNumber = null;
+      _email = null;
+    }
 
     showDialog(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(
-              existingMember == null ? 'Add Crew Member' : 'Edit Crew Member'),
-          content: Column(
+      builder: (context) => AlertDialog(
+        title: Text(existingCrewMember == null
+            ? 'Add Crew Member'
+            : 'Edit Crew Member'),
+        content: Form(
+          key: _formKey,
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: _nameController,
-                decoration:
-                    const InputDecoration(hintText: 'Enter crew member name'),
+              TextFormField(
+                initialValue: _crewName,
+                decoration: const InputDecoration(labelText: 'Crew Name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the crew name';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _crewName = value,
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _phoneController,
-                decoration:
-                    const InputDecoration(hintText: 'Enter phone number'),
+              TextFormField(
+                initialValue: _phoneNumber,
+                decoration: const InputDecoration(labelText: 'Phone Number'),
                 keyboardType: TextInputType.phone,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the phone number';
+                  }
+                  if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                    return 'Please enter a valid phone number';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _phoneNumber = value,
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: _emailController,
-                decoration:
-                    const InputDecoration(hintText: 'Enter email address'),
+              TextFormField(
+                initialValue: _email,
+                decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the email';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _email = value,
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_nameController.text.isNotEmpty &&
-                    _phoneController.text.isNotEmpty &&
-                    _emailController.text.isNotEmpty) {
-                  setState(() {
-                    if (existingMember == null) {
-                      _crewMembers.add({
-                        'name': _nameController.text,
-                        'phone': _phoneController.text,
-                        'email': _emailController.text,
-                      });
-                    } else if (index != null) {
-                      _crewMembers[index] = {
-                        'name': _nameController.text,
-                        'phone': _phoneController.text,
-                        'email': _emailController.text,
-                      };
-                    }
-                  });
-                  Navigator.of(dialogContext).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(existingMember == null
-                          ? 'Crew member added'
-                          : 'Crew member updated'),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('All fields are required')),
-                  );
-                }
-              },
-              child: Text(existingMember == null ? 'Add' : 'Update'),
-            ),
-          ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                setState(() {
+                  if (existingCrewMember != null) {
+                    // Edit crew member
+                    existingCrewMember['name'] = _crewName!;
+                    existingCrewMember['phone'] = _phoneNumber!;
+                    existingCrewMember['email'] = _email!;
+                  } else {
+                    // Add new crew member
+                    widget.crewMembers.add({
+                      'name': _crewName!,
+                      'phone': _phoneNumber!,
+                      'email': _email!,
+                    });
+                  }
+                });
+                Navigator.pop(context);
+              }
+            },
+            child: Text(existingCrewMember == null ? 'Add' : 'Save'),
+          ),
+        ],
+      ),
     );
   }
 
-  void _deleteCrewMember(int index) {
-    setState(() {
-      _crewMembers.removeAt(index);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Crew member deleted')),
+  void _deleteCrewMember(Map<String, String> crewMember) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Crew Member'),
+        content: const Text('Are you sure you want to delete this crew member?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                widget.crewMembers.remove(crewMember);
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -117,46 +151,42 @@ class _ManageCrewScreenState extends State<ManageCrewScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ElevatedButton(
-              onPressed: () => _addOrEditCrewMember(),
-              child: const Text('Add New Crew Member'),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _crewMembers.length,
-                itemBuilder: (context, index) {
-                  final crewMember = _crewMembers[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(crewMember['name'] ?? ''),
-                      subtitle: Text(
-                          'Phone: ${crewMember['phone']}\nEmail: ${crewMember['email']}'),
-                      isThreeLine: true,
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () => _addOrEditCrewMember(
-                                existingMember: crewMember, index: index),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _deleteCrewMember(index),
-                          ),
-                        ],
-                      ),
+        child: ListView.builder(
+          itemCount: widget.crewMembers.length,
+          itemBuilder: (context, index) {
+            final crewMember = widget.crewMembers[index];
+            return Card(
+              child: ListTile(
+                title: Text(crewMember['name'] ?? ''),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Phone: ${crewMember['phone']}'),
+                    Text('Email: ${crewMember['email']}'),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () => _addOrEditCrewMember(
+                          existingCrewMember: crewMember),
                     ),
-                  );
-                },
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => _deleteCrewMember(crewMember),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _addOrEditCrewMember(),
+        child: const Icon(Icons.add),
       ),
     );
   }

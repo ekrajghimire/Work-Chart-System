@@ -28,8 +28,20 @@ bool get isDesktop =>
     !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
 class MyApp extends StatelessWidget {
-  // Shared task list for tasks
+  // Shared task list and crew members list
   final List<Map<String, dynamic>> tasks = [];
+  final List<Map<String, String>> crewMembers = [
+    {
+      'name': 'John Doe',
+      'phone': '1234567890',
+      'email': 'john.doe@example.com'
+    },
+    {
+      'name': 'Jane Smith',
+      'phone': '9876543210',
+      'email': 'jane.smith@example.com'
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +57,20 @@ class MyApp extends StatelessWidget {
         '/': (context) => PlaceholderHomeScreen(),
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        // Pass the tasks list to AdminDashboardScreen
-        '/admin_dashboard': (context) => AdminDashboardScreen(tasks: tasks),
-        '/manage_crew': (context) => const ManageCrewScreen(),
+        '/admin_dashboard': (context) =>
+            AdminDashboardScreen(tasks: tasks, crewMembers: crewMembers),
+        '/manage_crew': (context) => ManageCrewScreen(crewMembers: crewMembers),
         '/crew_dashboard': (context) => CrewDashboard(),
-        '/create_task': (context) =>
-            CreateTaskScreen(tasks: tasks, isAdmin: true),
-        '/view_all_tasks': (context) =>
-            ViewAllTasksScreen(tasks: tasks, isAdmin: true),
+        '/create_task': (context) => CreateTaskScreen(
+              tasks: tasks,
+              crewMembers:
+                  crewMembers.map((member) => member['name'] ?? '').toList(),
+              isAdmin: true,
+            ),
+        '/view_all_tasks': (context) => ViewAllTasksScreen(
+              tasks: tasks,
+              isAdmin: true,
+            ),
       },
     );
   }
