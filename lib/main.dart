@@ -1,16 +1,36 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'screens/admin_dashboard_screen.dart'; 
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:work_chart_system/screens/manage_crew_screen.dart';
+import 'package:work_chart_system/screens/view_all_tasks.dart';
+import 'dart:io' show Platform;
+
+import 'screens/admin_dashboard_screen.dart';
 import 'screens/crew_dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
-import 'screens/create_task_screen.dart'; 
-import 'screens/view_all_tasks.dart'; 
+import 'screens/create_task_screen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize database for desktop or web
+  if (kIsWeb || isDesktop) {
+    databaseFactory = databaseFactoryFfi;
+  }
+
   runApp(MyApp());
 }
 
+/// Check if the app is running on a desktop platform
+bool get isDesktop =>
+    !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+
 class MyApp extends StatelessWidget {
+  // Shared task list for tasks
+  final List<Map<String, dynamic>> tasks = [];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,10 +45,14 @@ class MyApp extends StatelessWidget {
         '/': (context) => PlaceholderHomeScreen(),
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        '/admin_dashboard': (context) => AdminDashboardScreen(),
+        // Pass the tasks list to AdminDashboardScreen
+        '/admin_dashboard': (context) => AdminDashboardScreen(tasks: tasks),
+        '/manage_crew': (context) => const ManageCrewScreen(),
         '/crew_dashboard': (context) => CrewDashboard(),
-        '/create_task': (context) => CreateTaskScreen(),
-        '/view_all_tasks': (context) => ViewAllTasksScreen(),
+        '/create_task': (context) =>
+            CreateTaskScreen(tasks: tasks, isAdmin: true),
+        '/view_all_tasks': (context) =>
+            ViewAllTasksScreen(tasks: tasks, isAdmin: true),
       },
     );
   }
@@ -39,29 +63,29 @@ class PlaceholderHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Work Chart System'),
+        title: const Text('Work Chart System'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Welcome to the Work Chart System',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login');
               },
-              child: Text('Go to Login'),
+              child: const Text('Go to Login'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/signup');
               },
-              child: Text('Go to Sign Up'),
+              child: const Text('Go to Sign Up'),
             ),
           ],
         ),

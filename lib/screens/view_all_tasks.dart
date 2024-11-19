@@ -1,56 +1,40 @@
 import 'package:flutter/material.dart';
 
 class ViewAllTasksScreen extends StatelessWidget {
-  final List<Map<String, String>> tasks = [
-    {
-      'name': 'Task 1',
-      'description': 'Task description 1',
-      'date': '2024-11-19',
-      'assigned': 'John Doe'
-    },
-    {
-      'name': 'Task 2',
-      'description': 'Task description 2',
-      'date': '2024-11-20',
-      'assigned': 'Jane Smith'
-    },
-    {
-      'name': 'Task 3',
-      'description': 'Task description 3',
-      'date': '2024-11-21',
-      'assigned': 'Mark Lee'
-    },
-  ];
+  final List<Map<String, dynamic>> tasks;
+
+  const ViewAllTasksScreen({Key? key, required this.tasks, required bool isAdmin}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('View All Tasks'),
+        title: const Text('View All Tasks'),
       ),
-      body: ListView.builder(
-        itemCount: tasks.length,
-        itemBuilder: (context, index) {
-          final task = tasks[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: ListTile(
-              title: Text(task['name'] ?? ''),
-              subtitle: Text(
-                  'Assigned to: ${task['assigned']}\nDate: ${task['date']}'),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  // Add logic for deleting a task here
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Task deleted!'),
-                  ));
-                },
-              ),
+      body: tasks.isEmpty
+          ? const Center(child: Text('No tasks available.'))
+          : ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(task['taskName'] ?? 'No Task Name'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Client: ${task['clientName'] ?? 'N/A'}'),
+                        Text('Location: ${task['location'] ?? 'N/A'}'),
+                        Text('Date: ${task['date'] ?? 'N/A'}'),
+                        Text('Time: ${task['time'] ?? 'N/A'}'),
+                        Text('Crew Member: ${task['crewMember'] ?? 'N/A'}'),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
