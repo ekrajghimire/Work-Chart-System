@@ -1,6 +1,6 @@
 # work_chart_system
 
-A new Flutter project.
+A new Flutter Work chart system project .
 
 ## Getting Started
 
